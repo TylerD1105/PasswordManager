@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "tldts": "^7.4.11"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.11"
   }
 }

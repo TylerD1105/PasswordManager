@@ -1,12 +1,10 @@
 import { getDomain } from 'tldts';
 export function getRegistrableDomain(input: string): string | null {
-
-try {
-const url = new URL(input);
-return getDomain(url.hostname);
-} catch {
+const domain = normalizeSite(input);
+if (domain === null) {
     return null;
 }
+return getDomain(domain);
 }
 
 export function matchesSite(candidateURL: string, storedURL: string) : boolean {
@@ -16,4 +14,13 @@ export function matchesSite(candidateURL: string, storedURL: string) : boolean {
         return false;
     }
     return candidateDomain === storedDomain;
+}
+
+export function normalizeSite(input: string): string | null{
+    try{
+        const url = new URL(input);
+        return url.hostname.toLowerCase()
+    }catch{
+        return null;
+    }
 }
