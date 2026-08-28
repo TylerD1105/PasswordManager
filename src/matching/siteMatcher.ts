@@ -19,6 +19,7 @@ export function matchesSite(candidateURL: string, storedURL: string) : boolean {
 export function normalizeSite(input: string): string | null{
     try{
         const url = new URL(input);
+        
         return url.hostname.toLowerCase()
     }catch{
         return null;

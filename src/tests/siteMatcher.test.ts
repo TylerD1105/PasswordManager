@@ -40,5 +40,17 @@ describe('matchesSite', () => {
 })
 
 describe('normalizeSite', () => {
-    test
-}
+    test('normalizes sites correctly', () => {
+        expect(normalizeSite("https://www.example.com/path")).toBe("www.example.com")
+        expect(normalizeSite("https://subdomain.example.co.uk")).toBe("subdomain.example.co.uk")
+        expect(normalizeSite("https://subdomain.Github.com")).toBe("subdomain.github.com")
+        expect(normalizeSite("https://google.com:443")).toBe("google.com")
+    })
+
+    test('returns null for invalid urls', () => {
+        expect(normalizeSite("not a url")).toBe(null)
+        expect(normalizeSite("http://")).toBe(null)
+        expect(normalizeSite("https://")).toBe(null)
+        expect(normalizeSite("")).toBe(null)
+    })
+})
