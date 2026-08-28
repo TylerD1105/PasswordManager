@@ -20,7 +20,7 @@ export function normalizeSite(input: string): string | null{
     try{
         const url = new URL(input);
         
-        return url.hostname.toLowerCase()
+        return url.hostname.toLowerCase() || null;
     }catch{
         return null;
     }
