@@ -1,12 +1,10 @@
-
-
-export async function deriveEncryptionKey(password: string, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
+export async function deriveEncryptionKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
     // Derive a key from the password using PBKDF2
     return crypto.subtle.deriveKey(
         {
             name : "PBKDF2",
             hash : "SHA-256",
-            salt,
+            salt: salt as BufferSource,
             iterations : 600000
         },
         await crypto.subtle.importKey(
@@ -24,4 +22,57 @@ export async function deriveEncryptionKey(password: string, salt: Uint8Array<Arr
         ["encrypt", "decrypt"]
     )
 
+}
+
+interface EncryptedVault {
+    salt: Uint8Array;
+    nonce: Uint8Array;
+    ciphertext: Uint8Array;
+}
+
+export function generateRandomSalt(length: number = 16): Uint8Array{
+    const salt = new Uint8Array(length);
+    crypto.getRandomValues(salt);
+    return salt;
+}
+
+export async function encryptVault(password: string, vaultData: string): Promise<EncryptedVault> {
+    const salt = generateRandomSalt();
+    const nonce =  generateRandomSalt(12); // AES-GCM standard nonce size is 12 bytes
+    const encryptionKey = await deriveEncryptionKey(password, salt);
+    
+
+    const ciphertext = await crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            iv: nonce as BufferSource,
+        },
+        encryptionKey,
+        new TextEncoder().encode(vaultData)
+    )
+    return {
+        salt,
+        nonce,
+        ciphertext: new Uint8Array(ciphertext)
+    }
+}
+
+export async function decryptVault(password: string, encryptedVault: EncryptedVault): Promise<string> {
+    const decryptionKey = await deriveEncryptionKey(password, encryptedVault.salt);
+    const plaintext = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: encryptedVault.nonce as BufferSource,
+        },
+        decryptionKey,
+        encryptedVault.ciphertext as BufferSource
+        
+    )
+    //TODO: Handle decryption errors better, Web Crypto throws more specific errors we should try to catch
+    try{
+    return new TextDecoder().decode(plaintext);
+
+    }catch{
+        throw new Error("Decryption failed. Possibly due to incorrect password or corrupted data.");
+    }
 }
