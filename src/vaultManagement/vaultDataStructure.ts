@@ -1,9 +1,9 @@
-interface VaultEntry {
+export interface VaultEntry {
     site: string;
     username: string;
     password: string;
 }
-type Vault = VaultEntry[];
+export type Vault = VaultEntry[];
 
 export function addEntry(vault: Vault, site: string, username: string, password: string): Vault {
     const newEntry: VaultEntry = { site, username, password };

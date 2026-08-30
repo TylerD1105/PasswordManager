@@ -1,37 +1,43 @@
 import {describe, expect, test} from 'vitest'
 import {deriveEncryptionKey, generateRandomSalt, encryptVault, decryptVault} from '../crypto/crypto'
+import {Vault, VaultEntry} from '../vaultManagement/vaultDataStructure'
 
 describe('Round Trip Decryption Encryption', () => {
     test('should encrypt and then decrypt the vault data correctly, plaintext string', async () => {
-        const vaultData = "This is a vault data string test";
+        const vaultData : Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ]
         const password = "masterPassword";
         const encryptedVault = await encryptVault(password, vaultData);
         const decryptedData = await decryptVault(password, encryptedVault);
-        expect(decryptedData).toBe(vaultData);
+        expect(decryptedData).toEqual(vaultData);
         
     })
     test('Encrypt and Decrypt with JSON data', async () => {
-        const vaultData = JSON.stringify({
-            username: "user@example.com",
-            password: "securePassword123",
-            site: "https://example.com"
-        })
+        const vaultData : Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ]
         const password = "masterPassword";
         const encryptedVault = await encryptVault(password, vaultData);
         const decryptedData = await decryptVault(password, encryptedVault);
-        expect(decryptedData).toBe(vaultData);
+        expect(decryptedData).toEqual(vaultData);
     })
     test('Encrypt and Decrypt with empty string', async () => {
-        const vaultData = "";
+        const vaultData : Vault = [];
         const password = "masterPassword";
         const encryptedVault = await encryptVault(password, vaultData);
         const decryptedData = await decryptVault(password, encryptedVault);
-        expect(decryptedData).toBe(vaultData);
+        expect(decryptedData).toEqual(vaultData);
     })
 })
 describe('Wrong password decryption', () => {
     test('should throw an error when decrypting with the wrong password', async () => {
-        const vaultData = "This is a vault data string test";
+        const vaultData :Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ]
         const correctPassword = "correctPassword";
         const wrongPassword = "wrongPassword";
         const encryptedVault = await encryptVault(correctPassword, vaultData);
@@ -41,7 +47,10 @@ describe('Wrong password decryption', () => {
 
 describe('Modified ciphertext decryption', () => {
     test('should throw an error when decrypting with modified ciphertext', async () => {
-        const vaultData = "This is a vault data string test";
+        const vaultData :Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ];
         const password = "masterPassword";
         const encryptedVault = await encryptVault(password, vaultData);
         // Modify the ciphertext to simulate tampering
@@ -57,7 +66,10 @@ describe('Modified ciphertext decryption', () => {
 
 describe("Salt and Nonce Generation", () => {
     test("When vault encryption is performed, a random salt and nonce should be generated", async () => {
-        const vaultData = "This is a vault data string test";
+        const vaultData :Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ];
         const password = "masterPassword";
         const encryptedVault = await encryptVault(password, vaultData);
         expect(encryptedVault.salt).toBeInstanceOf(Uint8Array);
@@ -66,7 +78,10 @@ describe("Salt and Nonce Generation", () => {
         expect(encryptedVault.salt.length).toBe(16);
     })
     test("When same salt and nonce are used, the encryption should be deterministic", async () => {
-        const vaultData = "This is a vault data string test";
+        const vaultData : Vault = [
+            { site: 'example.com', username: 'user1', password: 'password1' },
+            { site: 'another.com', username: 'user2', password: 'password2' }
+        ];
         const password = "masterPassword";
         const encryptedVault1 = await encryptVault(password, vaultData);
         const encryptedVault2 = await encryptVault(password, vaultData);
