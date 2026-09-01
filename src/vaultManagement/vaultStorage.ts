@@ -1,11 +1,12 @@
 //This file is used for converting encrypted vaults to a data format that can be used to store it in the browsers local storage as well as locally on a computer.
 import {EncryptedVault} from "../crypto/crypto";
 //TODO: Use BASE64 to encode the Uint8Arrays instead of using TextEncoder/TextDecoder, as this will allow us to store binary data in a string format without losing any information. The current implementation may lead to data loss or corruption when converting between Uint8Array and string.
+
 export function serializeEncryptedVault(encryptedVault: EncryptedVault): string {
     const serialized = {
-        salt: new TextDecoder().decode(encryptedVault.salt),
-        nonce: new TextDecoder().decode(encryptedVault.nonce),
-        ciphertext: new TextDecoder().decode(encryptedVault.ciphertext)
+        salt: bytesToBase64(encryptedVault.salt),
+        nonce: bytesToBase64(encryptedVault.nonce),
+        ciphertext: bytesToBase64(encryptedVault.ciphertext)
     };
     return JSON.stringify(serialized);
 }
@@ -13,9 +14,19 @@ export function serializeEncryptedVault(encryptedVault: EncryptedVault): string 
 export function deserializeEncryptedVault(data: string): EncryptedVault {
     const parsed = JSON.parse(data);
     return {
-        salt: new TextEncoder().encode(parsed.salt),
-        nonce: new TextEncoder().encode(parsed.nonce),
-        ciphertext: new TextEncoder().encode(parsed.ciphertext)
+        salt: base64ToBytes(parsed.salt),
+        nonce: base64ToBytes(parsed.nonce),
+        ciphertext: base64ToBytes(parsed.ciphertext)
     };
 }
 
+
+export function bytesToBase64(bytes: Uint8Array): string {
+    const base64String = Buffer.from(bytes).toString("base64");
+    return base64String;
+}
+
+export function base64ToBytes(base64String: string): Uint8Array {
+    const bytes = Buffer.from(base64String, "base64");
+    return new Uint8Array(bytes);
+}

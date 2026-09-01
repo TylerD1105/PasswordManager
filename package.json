@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "core-js": "^3.50.0",
     "tldts": "^7.4.11"
   },
   "devDependencies": {
