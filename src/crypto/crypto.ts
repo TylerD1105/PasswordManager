@@ -26,7 +26,7 @@ export async function deriveEncryptionKey(password: string, salt: Uint8Array): P
 
 }
 
-interface EncryptedVault {
+export interface EncryptedVault {
     salt: Uint8Array;
     nonce: Uint8Array;
     ciphertext: Uint8Array;
