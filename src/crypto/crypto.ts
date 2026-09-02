@@ -39,6 +39,7 @@ export function generateRandomSalt(length: number = 16): Uint8Array{
 }
 
 export async function encryptVault(password: string, vault: Vault): Promise<EncryptedVault> {
+    const version = 1; // You can change this version number as needed for future updates
     const salt = generateRandomSalt();
     const nonce =  generateRandomSalt(12); // AES-GCM standard nonce size is 12 bytes
     const encryptionKey = await deriveEncryptionKey(password, salt);
