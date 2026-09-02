@@ -34,4 +34,14 @@ describe('Vault Storage', () => {
         } // Cast to any to bypass TypeScript checks for testing purposes
         expect(() => deserializeEncryptedVault(JSON.stringify(incompleteEncryptedVault))).toThrow();
     })
+
+    test('deserializeEncryptedVault throws an error for unsupported version', () => {
+        const unsupportedVersionVault = {
+            salt: 'AQIDBA==',
+            nonce: 'BFNGRw==',
+            version: 2,
+            ciphertext: 'UkVHVElPTl9WQUxVRSU='
+        };
+        expect(() => deserializeEncryptedVault(JSON.stringify(unsupportedVersionVault))).toThrow();
+    })
 })
