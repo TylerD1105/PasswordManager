@@ -5,17 +5,21 @@ export function serializeEncryptedVault(encryptedVault: EncryptedVault): string 
     const serialized = {
         salt: bytesToBase64(encryptedVault.salt),
         nonce: bytesToBase64(encryptedVault.nonce),
-        ciphertext: bytesToBase64(encryptedVault.ciphertext)
+        ciphertext: bytesToBase64(encryptedVault.ciphertext),
+        version: 1
     };
     return JSON.stringify(serialized);
 }
 
 export function deserializeEncryptedVault(data: string): EncryptedVault {
     const parsed = JSON.parse(data);
+    if (parsed.version !== 1) {
+        throw new Error(`Unsupported encrypted vault version: ${parsed.version}`);
+    }
     return {
         salt: base64ToBytes(parsed.salt),
         nonce: base64ToBytes(parsed.nonce),
-        ciphertext: base64ToBytes(parsed.ciphertext)
+        ciphertext: base64ToBytes(parsed.ciphertext),
     };
 }
 

@@ -25,12 +25,13 @@ describe('Vault Storage', () => {
         const invalidJson = "{invalidJson: true}";
         expect(() => deserializeEncryptedVault(invalidJson)).toThrow();
     })
-    test('serializeEncryptedVault missing fields throws an error', () => {
+    test('deserializeEncryptedVault malformed fields throws an error', () => {
         const incompleteEncryptedVault = {
-            salt: new Uint8Array([1, 2, 3]),
-            nonce: new Uint8Array([4, 5, 6])
+            salt: 'AQIDBA==',
+            nonce: 'BFNGRw==',
+            version: 1  
             // Missing ciphertext
-        } as any; // Cast to any to bypass TypeScript checks for testing purposes
-        expect(() => serializeEncryptedVault(incompleteEncryptedVault)).toThrow();
+        } // Cast to any to bypass TypeScript checks for testing purposes
+        expect(() => deserializeEncryptedVault(JSON.stringify(incompleteEncryptedVault))).toThrow();
     })
 })
