@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {serializeEncryptedVault, deserializeEncryptedVault, base64ToBytes, bytesToBase64} from '../vaultManagement/vaultStorage'
+import {serializeEncryptedVault, deserializeEncryptedVault, base64ToBytes, bytesToBase64} from '../vaultManagement/encryptedVaultStorage'
 import {encryptVault, decryptVault} from '../crypto/crypto'
 
 describe('Vault Storage', () => {
