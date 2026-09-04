@@ -21,10 +21,10 @@ Lock:
 -serialize the vault and store it
 -clear the vault in memory
 */
-import {Vault} from '../vaultManagement/vaultDataStructure'
-import {deserializeEncryptedVault} from '../vaultManagement/encryptedVaultStorage'
-import {decryptVault} from '../crypto/crypto'
-class vaultSession {
+import {Vault, getEntriesForSite} from '../vaultManagement/vaultDataStructure'
+import {deserializeEncryptedVault, serializeEncryptedVault} from '../vaultManagement/encryptedVaultStorage'
+import {decryptVault, encryptVault} from '../crypto/crypto'
+export class VaultSession {
     private vault : Vault | null = null;
     private isLocked : boolean = true;
 
@@ -32,12 +32,28 @@ class vaultSession {
     public async unlock(masterPass: string, storedVaultData: string) {
         const encryptedVault = deserializeEncryptedVault(storedVaultData);
         try{
-            this.vault = await decryptVault(masterPass, encryptedVault)
-
+            this.vault = await decryptVault(masterPass, encryptedVault);
+            this.isLocked = false;
         } catch(e){
             console.error("An error has occured:", e)
         }
     }
 
-    
+    public async lock(masterPass: string): Promise<string> {
+        
+        if(this.vault === null) {
+            throw new Error("Tried to lock a vault when there isn't a vault in memory.")
+        }
+        else {
+            const encryptedVault = await encryptVault(masterPass, this.vault)
+            const serializedVault = serializeEncryptedVault(encryptedVault)
+            //Add later, send serialiedVault to storage module so it can store it
+            return serializedVault;
+            this.vault = null;
+        }
+    }
+
+    public getEntriesForSite(site: string) {
+        getEntriesForSite(this.vault, site)
+    }
 }
