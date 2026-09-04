@@ -44,4 +44,14 @@ describe('Vault Storage', () => {
         };
         expect(() => deserializeEncryptedVault(JSON.stringify(unsupportedVersionVault))).toThrow();
     })
+
+    test('deserializeEncryptedVault throws an error for malformed fields', () => {
+        const malformedFieldsVault = {
+            salt: 12345, // Should be a string
+            nonce: 'BFNGRw==',
+            version: 1,
+            ciphertext: 'UkVHVElPTl9WQUxVRSU='
+        };
+        expect(() => deserializeEncryptedVault(JSON.stringify(malformedFieldsVault))).toThrow();
+    })
 })

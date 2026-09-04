@@ -13,8 +13,12 @@ export function serializeEncryptedVault(encryptedVault: EncryptedVault): string 
 
 export function deserializeEncryptedVault(data: string): EncryptedVault {
     const parsed = JSON.parse(data);
+    
     if (parsed.version !== 1) {
         throw new Error(`Unsupported encrypted vault version: ${parsed.version}`);
+    }
+    else if (typeof parsed.salt !== "string" || typeof parsed.nonce !== "string" || typeof parsed.ciphertext !== "string") {
+        throw new Error("Malformed encrypted vault data");
     }
     return {
         salt: base64ToBytes(parsed.salt),
