@@ -21,11 +21,11 @@ Lock:
 -serialize the vault and store it
 -clear the vault in memory
 */
-import {Vault, getEntriesForSite} from '../vaultManagement/vaultDataStructure'
+import * as vaultFunctions from '../vaultManagement/vaultDataStructure'
 import {deserializeEncryptedVault, serializeEncryptedVault} from '../vaultManagement/encryptedVaultStorage'
 import {decryptVault, encryptVault} from '../crypto/crypto'
 export class VaultSession {
-    private vault : Vault | null = null;
+    private vault : vaultFunctions.Vault | null = null;
     private isLocked : boolean = true;
 
 
@@ -48,12 +48,30 @@ export class VaultSession {
             const encryptedVault = await encryptVault(masterPass, this.vault)
             const serializedVault = serializeEncryptedVault(encryptedVault)
             //Add later, send serialiedVault to storage module so it can store it
-            return serializedVault;
             this.vault = null;
+            return serializedVault;
+            
         }
     }
+    //work on this later
+    public getEntriesForSite(site: string) : vaultFunctions.VaultEntry[] {
+        if (this.vault === null) {
+            throw new Error("Tried to grab entries from a vault that is not in memory")
+        }
+        return vaultFunctions.getEntriesForSite(this.vault, site)
+    }
 
-    public getEntriesForSite(site: string) {
-        getEntriesForSite(this.vault, site)
+    public addEntrytoSite(site: string, username: string, password: string) {
+        if (this.vault === null){
+            throw new Error ("Tried to add entries from a vault that is not in memory")
+        }
+        vaultFunctions.addEntry(this.vault, site, username, password);
+    }
+
+    public removeEntry(site: string, username: string) {
+        if(this.vault === null) {
+            throw new Error("Tried to remove entries from a vault that is not in memory")
+        }
+        vaultFunctions.removeEntry(this.vault, site, username);
     }
 }
