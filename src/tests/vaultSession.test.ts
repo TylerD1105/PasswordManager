@@ -4,21 +4,37 @@ import *  as vaultStorage from '../vaultManagement/encryptedVaultStorage' ;
 import * as vaultStructure from '../vaultManagement/vaultDataStructure'
 import * as crypto from '../crypto/crypto'
 describe('Vault Session Tests', async () => {
-    const vaultSession = new VaultSession;
+    
         const originalVault = [
             { site: 'example.com', username: 'user1', password: 'password1' },
-            { site: 'another.com', username: 'user2', password: 'password2' }
+            { site: 'another.com', username: 'user2', password: 'password2' },
+            { site: 'example.com', username: 'user2', password: 'password123'}
         ];
          const encryptedVault = await crypto.encryptVault('testpassword', originalVault);
         const serializedVault = vaultStorage.serializeEncryptedVault(encryptedVault);
     test('getEntriesForSite should throw an error when the vault is locked',  async () => {
-        expect(() => vaultSession.getEntriesForSite('example.com')).toThrow;
+        const vaultSession = new VaultSession;
+        expect(() => vaultSession.getEntriesForSite('example.com')).toThrow();
     })
     test('Valid unlock works', async () => {
+        const vaultSession = new VaultSession;
         await vaultSession.unlock('testpassword', serializedVault)
-        expect(vaultSession.getEntriesForSite('example.com')).toEqual([originalVault[0]])
+        expect(vaultSession.getEntriesForSite('example.com')).toEqual([originalVault[0], originalVault[2]])
     })
-
+    test('Wrong master password throws an error', async () => {
+        const vaultSession = new VaultSession;
+        await expect(vaultSession.unlock('wrongpassword', serializedVault)).rejects.toThrow();
+    })
+    test('Should throw an error if I try to lock a vault that is already locked' , async () => {
+        const vaultSession = new VaultSession;
+        await expect(vaultSession.lock('testpassword')).rejects.toThrow();
+    })
+    test('lock clears vault',  async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault)
+        await vaultSession.lock('testpassword')
+        expect(() => vaultSession.getEntriesForSite('example.com')).toThrow();
+    })
 
 
 })

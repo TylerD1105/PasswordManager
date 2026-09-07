@@ -36,6 +36,7 @@ export class VaultSession {
             this.isLocked = false;
         } catch(e){
             console.error("An error has occured:", e)
+            throw new Error('Decryption failed.')
         }
     }
 
