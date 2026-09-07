@@ -66,13 +66,13 @@ export class VaultSession {
         if (this.vault === null){
             throw new Error ("Tried to add entries from a vault that is not in memory")
         }
-        vaultFunctions.addEntry(this.vault, site, username, password);
+        this.vault = vaultFunctions.addEntry(this.vault, site, username, password);
     }
 
     public removeEntry(site: string, username: string) {
         if(this.vault === null) {
             throw new Error("Tried to remove entries from a vault that is not in memory")
         }
-        vaultFunctions.removeEntry(this.vault, site, username);
+        this.vault = vaultFunctions.removeEntry(this.vault, site, username);
     }
 }

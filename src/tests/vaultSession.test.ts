@@ -39,6 +39,23 @@ describe('Vault Session Tests', () => {
         await vaultSession.lock('testpassword')
         expect(() => vaultSession.getEntriesForSite('example.com')).toThrow();
     })
+    test('add entry to vault', async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault)
+        vaultSession.addEntrytoSite('example.com', 'username3', 'passypass')
+        expect(vaultSession.getEntriesForSite('example.com').length).toBe(3)
+    })
+    test('Remove entry from vault', async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault)
+        vaultSession.removeEntry('example.com', 'user2')
+        expect(vaultSession.getEntriesForSite('example.com').length).toBe(1)
+    }) 
+    test('Locked vault add and remove should throw', async () => {
+        const vaultSession = new VaultSession;
+        expect(() => vaultSession.addEntrytoSite('example.com', 'user4', 'password')).toThrow()
+        expect(() => vaultSession.removeEntry('example.com', 'user1')).toThrow()
 
+    })
 
 })
