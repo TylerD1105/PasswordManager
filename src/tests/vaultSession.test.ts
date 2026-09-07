@@ -1,17 +1,21 @@
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, beforeAll} from 'vitest'
 import {VaultSession} from '../vaultManagement/vaultSession'
 import *  as vaultStorage from '../vaultManagement/encryptedVaultStorage' ;
 import * as vaultStructure from '../vaultManagement/vaultDataStructure'
 import * as crypto from '../crypto/crypto'
-describe('Vault Session Tests', async () => {
-    
-        const originalVault = [
-            { site: 'example.com', username: 'user1', password: 'password1' },
-            { site: 'another.com', username: 'user2', password: 'password2' },
-            { site: 'example.com', username: 'user2', password: 'password123'}
-        ];
-         const encryptedVault = await crypto.encryptVault('testpassword', originalVault);
-        const serializedVault = vaultStorage.serializeEncryptedVault(encryptedVault);
+describe('Vault Session Tests', () => {
+    let serializedVault: string;
+    const originalVault = [
+        { site: 'example.com', username: 'user1', password: 'password1' },
+        { site: 'another.com', username: 'user2', password: 'password2' },
+        { site: 'example.com', username: 'user2', password: 'password123'}
+    ];
+    beforeAll(async () => {
+
+        const encryptedVault = await crypto.encryptVault('testpassword', originalVault);
+        serializedVault = vaultStorage.serializeEncryptedVault(encryptedVault);
+    })
+
     test('getEntriesForSite should throw an error when the vault is locked',  async () => {
         const vaultSession = new VaultSession;
         expect(() => vaultSession.getEntriesForSite('example.com')).toThrow();
