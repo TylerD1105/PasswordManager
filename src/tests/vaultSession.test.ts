@@ -68,5 +68,15 @@ describe('Vault Session Tests', () => {
     password: 'password'
 });
     })
+    test('Remove Entry Test', async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault);
+        vaultSession.removeEntry('example.com', 'user2');
+        expect(vaultSession.getEntriesForSite('example.com')).not.toContainEqual({
+            site:'example.com',
+            username: 'user2',
+            password: 'password'
+        })
+    })
 
 })
