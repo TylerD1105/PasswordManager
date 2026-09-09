@@ -58,4 +58,15 @@ describe('Vault Session Tests', () => {
 
     })
 
+    test('Add Entry Test', async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault);
+        vaultSession.addEntrytoSite('example.com', 'user3', 'password');
+        expect(vaultSession.getEntriesForSite('example.com')).toContainEqual({
+    site: 'example.com',
+    username: 'user3',
+    password: 'password'
+});
+    })
+
 })
