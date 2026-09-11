@@ -1,7 +1,6 @@
 import {describe, expect, test, beforeAll} from 'vitest'
 import {VaultSession} from '../vaultManagement/vaultSession'
-import *  as vaultStorage from '../vaultManagement/encryptedVaultStorage' ;
-import * as vaultStructure from '../vaultManagement/vaultDataStructure'
+import *  as vaultStorage from '../vaultManagement/encryptedVaultStorage'
 import * as crypto from '../crypto/crypto'
 describe('Vault Session Tests', () => {
     let serializedVault: string;
@@ -75,8 +74,21 @@ describe('Vault Session Tests', () => {
         expect(vaultSession.getEntriesForSite('example.com')).not.toContainEqual({
             site:'example.com',
             username: 'user2',
-            password: 'password'
+            password: 'password123'
         })
     })
+    test('see if vault additions survive serialization', async () => {
+        const vaultSession = new VaultSession;
+        await vaultSession.unlock('testpassword', serializedVault)
+        vaultSession.addEntrytoSite('example.com', 'user3', 'password');
+        serializedVault = await vaultSession.lock('testpassword')
+        const vaultSessionB = new VaultSession;
+        await vaultSessionB.unlock('testpassword', serializedVault)
+        expect(vaultSessionB.getEntriesForSite('example.com')).toContainEqual({
+            site: 'example.com',
+            username: 'user3',
+            password: 'password'
+        })
+    }) 
 
 })
