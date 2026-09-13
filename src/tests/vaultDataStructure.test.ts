@@ -41,5 +41,5 @@ describe('Vault Data Structure', () => {
         expect(deserializedVault).toEqual(vault);
     })
     //todo: add later
-    test('Rejection test for malformed data of deserialize vault')
+
 });
