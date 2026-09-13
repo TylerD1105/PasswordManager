@@ -41,5 +41,8 @@ describe('Vault Data Structure', () => {
         expect(deserializedVault).toEqual(vault);
     })
     //todo: add later
-
+    test('deserializeVault check for malformed inputs', () => {
+        const malformedJSON = JSON.stringify([{site: 'example.com', username: 'user4'}])
+        expect(() => deserializeVault(malformedJSON)).toThrow()
+    })
 });
