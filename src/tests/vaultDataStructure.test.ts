@@ -40,7 +40,7 @@ describe('Vault Data Structure', () => {
         const deserializedVault = deserializeVault(serializedVault);
         expect(deserializedVault).toEqual(vault);
     })
-    //todo: add later
+    //todo: Add error catching to vaultDataStructure file to catch this. later
     test('deserializeVault check for malformed inputs', () => {
         const malformedJSON = JSON.stringify([{site: 'example.com', username: 'user4'}])
         expect(() => deserializeVault(malformedJSON)).toThrow()
