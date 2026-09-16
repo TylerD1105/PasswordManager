@@ -21,10 +21,28 @@ export function removeEntry(vault: Vault, site: string, username: string): Vault
 export function serializeVault(vault: Vault): string {
     return JSON.stringify(vault);
 }
-
+//fix this LATER
 export function deserializeVault(serializedVault: string): Vault{
     try {
         const parsedVault = JSON.parse(serializedVault) as Vault;
+        try {
+            Array.isArray(parsedVault);
+
+        }
+        catch(error : unknown) {
+            console.error('parsedVault is not of an Array type')
+        }
+        
+            for(let i = 0; i < parsedVault.length; i++) {
+                if (parsedVault[i] === null) {
+                    console.error('Entry detected as null')
+                }
+                if (!('site' in parsedVault[i] && 'username' in parsedVault[i] && 'password' in parsedVault[i])) {
+                    console.error('Does not have all fields required for an entry')
+                }
+                if (typeof parsedVault.site === 'string' || typeof parsedVault.username)
+            }
+        
         return parsedVault;
     }
     catch (error) {
